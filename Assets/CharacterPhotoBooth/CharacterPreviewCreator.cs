@@ -18,11 +18,11 @@ public class CharacterPreviewCreator : MonoBehaviour {
         previewTarget.transform.position = Vector3.zero;
 
         Texture2D outputTexture = RenderFrameToTexture();
-        AssetDatabase.CreateAsset(outputTexture, targetFile);
 
         // For testing purposes, also write to a file in the project folder
         File.WriteAllBytes(targetFile, outputTexture.EncodeToPNG());
 
+        DestroyImmediate(outputTexture);
         DestroyImmediate(previewTarget);
         CharacterPreview.SetActive(true);
     }
