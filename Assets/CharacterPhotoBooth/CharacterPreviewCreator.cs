@@ -14,7 +14,7 @@ public class CharacterPreviewCreator : MonoBehaviour {
 
     public void CreatePreview(GameObject previewTargetPrefab, string targetFile) {
         CharacterPreview.SetActive(false);
-        GameObject previewTarget = Instantiate(previewTargetPrefab, CharacterParent);
+        GameObject previewTarget = Instantiate(previewTargetPrefab, CharacterParent, false);
         previewTarget.transform.position = Vector3.zero;
 
         Texture2D outputTexture = RenderFrameToTexture();
@@ -23,8 +23,10 @@ public class CharacterPreviewCreator : MonoBehaviour {
         File.WriteAllBytes(targetFile, outputTexture.EncodeToPNG());
 
         DestroyImmediate(outputTexture);
-        DestroyImmediate(previewTarget);
+        //DestroyImmediate(previewTarget);
         CharacterPreview.SetActive(true);
+
+        ChangeImportSettings(targetFile);
     }
 
     // source: https://docs.unity3d.com/ScriptReference/Camera.Render.html
@@ -47,5 +49,13 @@ public class CharacterPreviewCreator : MonoBehaviour {
         RenderTexture.active = currentRT;
 
         return image;
+    }
+    
+    private void ChangeImportSettings(string targetFile) {
+        TextureImporter importer = (TextureImporter)AssetImporter.GetAtPath(targetFile);
+        importer.textureType = TextureImporterType.Sprite;
+        
+        EditorUtility.SetDirty(importer);
+        importer.SaveAndReimport();
     }
 }
