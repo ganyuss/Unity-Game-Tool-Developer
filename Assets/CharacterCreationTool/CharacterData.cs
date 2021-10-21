@@ -22,7 +22,7 @@ public class CharacterData : ScriptableObject
     }
     
 #if UNITY_EDITOR
-    [Button]
+    [Button("Delete Character Completely")]
     private void DeleteCharacterCompletely() {
         AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(Icon));
         AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(Prefab));
