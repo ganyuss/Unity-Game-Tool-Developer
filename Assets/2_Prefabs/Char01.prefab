@@ -511,7 +511,7 @@ GameObject:
   - component: {fileID: 7363997819378707834}
   - component: {fileID: 7363997819378707835}
   m_Layer: 0
-  m_Name: free_male_1
+  m_Name: Char01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -671,7 +671,7 @@ SkinnedMeshRenderer:
   - {fileID: 7363997819604992586}
   - {fileID: 7363997819604992594}
   m_BlendShapeWeights: []
-  m_RootBone: {fileID: 7363997819604992592}
+  m_RootBone: {fileID: 0}
   m_AABB:
     m_Center: {x: -0.026544098, y: -0.000065948814, z: 0.000000010244548}
     m_Extent: {x: 0.055122387, y: 0.019937018, z: 0.029521387}

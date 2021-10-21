@@ -45,7 +45,10 @@ namespace EditorPlus.Editor {
             Rect controlRect = EditorGUILayout.GetControlRect(true, Drawer.GetPropertyHeight(property, false));
             Drawer.Draw(controlRect, property, false);
 
-            serializedObject.ApplyModifiedProperties();
+            
+            // Prevent error if the target has been destroyed during OnInspectorGUI 
+            if ((bool)serializedObject.targetObject)
+                serializedObject.ApplyModifiedProperties();
         }
     }
     

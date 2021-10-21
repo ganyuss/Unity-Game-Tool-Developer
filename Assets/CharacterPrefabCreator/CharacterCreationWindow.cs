@@ -1,35 +1,40 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using EditorPlus.Editor;
+using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CharacterCreationWindow : EditorWindow {
 
-    [MenuItem("Avatar Creator/Open Window")]
+    [MenuItem("Character Creator/Open Window")]
     public static void ShowWindow() {
         GetWindow<CharacterCreationWindow>().Show();
     }
     
-    private GameObject characterRig;
-    private GameObject characterModel;
-    private Avatar characterAvatar;
+    private string characterName;
+    private int characterPrice;
+    
+    private GameObject characterFBXAsset;
 
     private Renderer modelRenderer;
     private Material[] materials;
-    
-    private GameObject characterBasePrefab;
-    private string targetPrefabPath = "Assets/";
-    
+
     void OnGUI() {
 
-        EditorGUILayout.LabelField("Character", EditorStyles.boldLabel);
-        characterRig = ObjectField("Character Rig", characterRig, false);
+        characterName = EditorGUILayout.TextField("Character Name", characterName);
+        characterPrice = EditorGUILayout.IntField("Character Price", characterPrice);
+        
+        EditorGUILayout.Space();
+        
+        EditorGUILayout.LabelField("3D Model", EditorStyles.boldLabel);
         EditorGUI.BeginChangeCheck();
-        characterModel = ObjectField("Character Model", characterModel, false);
+        characterFBXAsset = ObjectField("Character FBX Asset", characterFBXAsset, false);
         if (EditorGUI.EndChangeCheck()) UpdateMaterialList();
-        characterAvatar = ObjectField("Character Avatar", characterAvatar, false);
         
         EditorGUILayout.Space();
 
@@ -42,37 +47,35 @@ public class CharacterCreationWindow : EditorWindow {
         }
         
         EditorGUILayout.Space();
-        
-        characterBasePrefab = ObjectField("Character Avatar", characterBasePrefab, false);
-        targetPrefabPath = EditorGUILayout.TextField("Target prefab path", targetPrefabPath);
-        
+
         GUI.enabled = IsCharacterCreationPossible();
         if (GUILayout.Button("Create Character")) {
-            GameObject characterPrefabVariant = CreatePrefabVariant(characterBasePrefab, targetPrefabPath);
-            characterPrefabVariant.GetComponent<Animator>().avatar = characterAvatar;
 
-            AddGameObjectsAsChildrenToPrefab(characterPrefabVariant, characterRig, characterModel);
+            var parameters = CharacterCreationParameters.Instance;
+            var characterPrefabPath = Path.Combine(parameters.CharacterPrefabFolder, characterName + ".prefab");
+            var characterPreviewPath = Path.Combine(parameters.CharacterPreviewFolder, characterName + ".png");
+            var characterDataPath = Path.Combine(parameters.CharacterDataFolder, characterName + ".asset");
+            
+            GameObject characterPrefab = CreateCharacterPrefab(parameters.CharacterPrefabBase,
+                characterPrefabPath, parameters);
+            
+            CharacterPreviewCreator.CreatePreview(characterPrefab, parameters.PhotoBoothSceneName,
+                characterPreviewPath);
+            Sprite characterPreview = AssetDatabase.LoadAssetAtPath<Sprite>(characterPreviewPath);
 
-            EditPrefabValue(characterPrefabVariant, prefab => {
-                Renderer renderer = prefab.GetComponentInChildren<Renderer>();
-                
-                // We must use a cloned array, because Renderer.sharedMaterials returns a copy of the array.
-                // source: bottom of https://docs.unity3d.com/ScriptReference/Renderer-sharedMaterials.html
-                Material[] materialsClone = new Material[materials.Length];
-                Array.Copy(materials, materialsClone, materials.Length);
-                
-                renderer.sharedMaterials = materialsClone;
-
-                if (renderer is SkinnedMeshRenderer skinnedMeshRenderer) {
-                    skinnedMeshRenderer.rootBone = FindRecursive(prefab.transform, skinnedMeshRenderer.rootBone.name);
-                }
-            });
-
+            CharacterData characterData = CreateInstance<CharacterData>();
+            characterData.Icon = characterPreview;
+            characterData.Prefab = characterPrefab;
+            characterData.Price = characterPrice;
+            
+            AssetDatabase.CreateAsset(characterData, characterDataPath);
+            
+            AssetDatabaseUtils.GetSingle<CharacterList>()?.Characters.Add(characterData);
         }
     }
 
     private void UpdateMaterialList() {
-        if (characterModel is null) {
+        if (characterFBXAsset is null) {
             modelRenderer = null;
             materials = null;
             
@@ -80,7 +83,7 @@ public class CharacterCreationWindow : EditorWindow {
         }
         
         if (modelRenderer is null)
-            modelRenderer = characterModel.GetComponent<Renderer>();
+            modelRenderer = characterFBXAsset.GetComponentInChildren<Renderer>();
 
         int modelMaterialCount = modelRenderer.sharedMaterials.Length;
         if (materials == null) {
@@ -90,20 +93,48 @@ public class CharacterCreationWindow : EditorWindow {
             Array.Resize(ref materials, modelMaterialCount);
         }
     }
+    
+#region Prefab Creation
+    private GameObject CreateCharacterPrefab(GameObject logicGameObject, string targetPrefabPath, CharacterCreationParameters parameters) {
+        GameObject characterPrefabVariant = CreateSeparatePrefab(characterFBXAsset, targetPrefabPath);
 
-    private GameObject CreatePrefabVariant(GameObject prefabBase, string targetPath) {
+        AddGameObjectsAsChildrenToPrefab(characterPrefabVariant, targetPrefabPath, logicGameObject);
+
+        EditPrefabValue(characterPrefabVariant, prefab => {
+            Renderer renderer = prefab.GetComponentInChildren<Renderer>();
+                
+            // We must use a cloned array, because Renderer.sharedMaterials returns a copy of the array.
+            // source: bottom of https://docs.unity3d.com/ScriptReference/Renderer-sharedMaterials.html
+            Material[] materialsClone = new Material[materials.Length];
+            Array.Copy(materials, materialsClone, materials.Length);
+                
+            renderer.sharedMaterials = materialsClone;
+
+            if (renderer is SkinnedMeshRenderer skinnedMeshRenderer) {
+                skinnedMeshRenderer.rootBone = FindRecursive(prefab.transform, skinnedMeshRenderer.rootBone.name);
+            }
+
+            prefab.GetComponentInChildren<Animator>().runtimeAnimatorController =
+                parameters.CharacterAnimatorController;
+        });
+
+        return characterPrefabVariant;
+    }
+
+    private GameObject CreateSeparatePrefab(GameObject prefabBase, string targetPrefabPath) {
         GameObject prefabBaseInstance = (GameObject)PrefabUtility.InstantiatePrefab(prefabBase);
-        GameObject prefabVariant = PrefabUtility.SaveAsPrefabAsset(prefabBaseInstance, targetPath);
+        PrefabUtility.UnpackPrefabInstance(prefabBaseInstance, PrefabUnpackMode.OutermostRoot, InteractionMode.AutomatedAction);
+        GameObject prefabVariant = PrefabUtility.SaveAsPrefabAsset(prefabBaseInstance, targetPrefabPath);
         DestroyImmediate(prefabBaseInstance);
 
         return prefabVariant;
     }
 
-    private void AddGameObjectsAsChildrenToPrefab(GameObject prefab, params GameObject[] childrenToAdd) {
+    private void AddGameObjectsAsChildrenToPrefab(GameObject prefab, string targetPrefabPath, params GameObject[] prefabChildrenToAdd) {
         GameObject prefabInstance = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
 
-        foreach (GameObject child in childrenToAdd) {
-            GameObject childInstance = Instantiate(child, prefabInstance.transform);
+        foreach (GameObject child in prefabChildrenToAdd) {
+            GameObject childInstance = (GameObject)PrefabUtility.InstantiatePrefab(child, prefabInstance.transform);
             PrefabUtility.ApplyAddedGameObject(childInstance, targetPrefabPath, InteractionMode.AutomatedAction);
         }
         
@@ -120,14 +151,11 @@ public class CharacterCreationWindow : EditorWindow {
         valuesModifier.Invoke(instance);
         
         PrefabUtility.ApplyPrefabInstance(instance, InteractionMode.AutomatedAction);
-        //DestroyImmediate(instance);
+        DestroyImmediate(instance);
     }
 
     private bool IsCharacterCreationPossible() =>
-        characterRig != null
-        && characterModel != null
-        && characterAvatar != null
-        && characterBasePrefab != null;
+        characterFBXAsset != null;
 
     /// <summary>
     /// Works just like <see cref="Transform.Find">Transform.Find(string)</see>, but recursively.
@@ -161,4 +189,5 @@ public class CharacterCreationWindow : EditorWindow {
         private T ObjectField<T>(string fieldLabel, T obj, bool allowSceneObjects) where T : UnityEngine.Object {
         return (T) EditorGUILayout.ObjectField(fieldLabel, obj, typeof(T), allowSceneObjects);
     }
+#endregion
 }
