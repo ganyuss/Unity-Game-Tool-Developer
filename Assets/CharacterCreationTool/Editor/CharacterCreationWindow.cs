@@ -11,15 +11,7 @@ using UnityEngine.UI;
 
 public class CharacterCreationWindow : EditorWindow {
 
-    [MenuItem("Character Creator/Open Window")]
-    public static void ShowWindow() {
-        GetWindow<CharacterCreationWindow>().Show();
-    }
-    
-    [MenuItem("Character Creator/Open Settings")]
-    private static void OpenSettings() {
-        Selection.activeObject = AssetDatabaseUtils.GetSingle<CharacterCreationParameters>();
-    }
+
     
     private string characterName;
     private int characterPrice;

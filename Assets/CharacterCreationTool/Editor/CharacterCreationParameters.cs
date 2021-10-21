@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using EditorPlus;
 using EditorPlus.Editor;
 using UnityEditor.Animations;
 using UnityEngine;
@@ -18,12 +19,24 @@ public class CharacterCreationParameters : ScriptableObject {
     [SerializeField]
     private string characterDataFolderName;
 
-    [Space]
+    [Header("References")]
     public GameObject CharacterPrefabBase;
     public AnimatorController CharacterAnimatorController;
     public string PhotoBoothSceneName;
+    
+    [Header("Export settings")]
+    public bool IncludeNonUsedCharacterInSpreadsheet;
+    [Dropdown(nameof(CreateDropdownList))]
+    public string Separator = ",";
 
     public string CharacterPrefabFolder => Path.Combine(characterFolder, characterPrefabFolderName);
     public string CharacterPreviewFolder => Path.Combine(characterFolder, characterPreviewFolderName);
     public string CharacterDataFolder => Path.Combine(characterFolder, characterDataFolderName);
+
+    private DropdownList<string> CreateDropdownList() {
+        return new DropdownList<string> {
+            ["Regular CSV (,)"] = ",",
+            ["Excel (;)"] = ";",
+        };
+    }
 }
