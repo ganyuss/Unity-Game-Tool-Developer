@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -62,7 +63,9 @@ public class CharacterCreationWindow : EditorWindow {
                 
                 renderer.sharedMaterials = materialsClone;
 
-                renderer.receiveShadows = false;
+                if (renderer is SkinnedMeshRenderer skinnedMeshRenderer) {
+                    skinnedMeshRenderer.rootBone = FindRecursive(prefab.transform, skinnedMeshRenderer.rootBone.name);
+                }
             });
 
         }
@@ -120,21 +123,42 @@ public class CharacterCreationWindow : EditorWindow {
         //DestroyImmediate(instance);
     }
 
-    // source: https://forum.unity.com/threads/custom-editor-new-prefabs-how-to-setup-overrides.675310/#post-4574266
-    private void SetPrefabDirty(GameObject prefab) {
-        EditorUtility.SetDirty(prefab);
-        PrefabUtility.RecordPrefabInstancePropertyModifications(prefab);
-        UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(prefab.scene);
-    }
-
     private bool IsCharacterCreationPossible() =>
         characterRig != null
         && characterModel != null
         && characterAvatar != null
         && characterBasePrefab != null;
-    
 
-    private T ObjectField<T>(string fieldLabel, T obj, bool allowSceneObjects) where T : UnityEngine.Object {
+    /// <summary>
+    /// Works just like <see cref="Transform.Find">Transform.Find(string)</see>, but recursively.
+    /// </summary>
+    /// <param name="parent">The transform to start from.</param>
+    /// <param name="targetName">the name of the transform to find, as child of parent.</param>
+    /// <returns>A child transform of parent with the name targetName, or null if none can be found.</returns>
+    private Transform FindRecursive(Transform parent, string targetName) {
+        List<Transform> transformsToLookAt = GetAllDirectChildrenOf(parent);
+
+        while (transformsToLookAt.Count > 0) {
+            foreach (Transform child in transformsToLookAt) {
+                if (child.name == targetName)
+                    return child;
+            }
+
+            List<Transform> nextLayer = new List<Transform>();
+            foreach (Transform child in transformsToLookAt) {
+                nextLayer.AddRange(GetAllDirectChildrenOf(child));
+            }
+
+            transformsToLookAt = nextLayer;
+        }
+
+        return null;
+    }
+
+    private List<Transform> GetAllDirectChildrenOf(Transform parent) =>
+        Enumerable.Range(0, parent.childCount).Select(parent.GetChild).ToList();
+
+        private T ObjectField<T>(string fieldLabel, T obj, bool allowSceneObjects) where T : UnityEngine.Object {
         return (T) EditorGUILayout.ObjectField(fieldLabel, obj, typeof(T), allowSceneObjects);
     }
 }
