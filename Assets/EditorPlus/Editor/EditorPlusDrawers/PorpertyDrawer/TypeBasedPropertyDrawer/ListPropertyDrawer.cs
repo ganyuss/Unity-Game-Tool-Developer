@@ -215,7 +215,7 @@ namespace EditorPlus.Editor {
 
         private void DrawListHeaderOnly(Rect rect) {
             // Copied from decompiler
-            ReorderableList.defaultBehaviours.DrawHeaderBackground(rect);
+            ReorderableList.defaultBehaviours?.DrawHeaderBackground(rect);
             rect.xMin += 6f;
             rect.xMax -= 6f;
             rect.height -= 2f;
