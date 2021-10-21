@@ -35,7 +35,7 @@ public class CharacterCreationWindow : EditorWindow {
         
         EditorGUILayout.Space();
 
-        if (materials != null) {
+        if (materials != null && materials.Length > 0) {
             EditorGUILayout.LabelField("Model's Materials", EditorStyles.boldLabel);
 
             for (int i = 0; i < materials.Length; i++) {
