@@ -8,11 +8,6 @@ using UnityEngine;
 public class MaterialListWindow : EditorWindow {
     private List<Material> materials;
 
-    [MenuItem("TEst/test")]
-    private static void a() {
-        GetWindow<MaterialListWindow>().Show();
-    }
-
     private static readonly string[] ExcludedPaths = {
         "Assets/Standard Assets/"
     };
