@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 72078f82a01beca4193b49c325124966, type: 3}
-  m_Name: Narmol
+  m_Name: Zombie
   m_EditorClassIdentifier: 
-  Price: 0
-  Icon: {fileID: 21300000, guid: 83d2dccbdba1235478930bbcfc4f9ddd, type: 3}
-  Prefab: {fileID: 7950973473709792752, guid: 5574bc04bff642b4e8cf3a0543e60bf3, type: 3}
+  Price: 200
+  Icon: {fileID: 21300000, guid: 19284541f6255f248befd74ec1d8b802, type: 3}
+  Prefab: {fileID: 850674604862398864, guid: f7c10d3f935056148be972b898209650, type: 3}

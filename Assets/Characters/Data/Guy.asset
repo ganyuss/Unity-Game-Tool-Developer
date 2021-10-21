@@ -9,8 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eeb1d2773c137214e9fa034cf29be43a, type: 3}
-  m_Name: CharacterList
+  m_Script: {fileID: 11500000, guid: 72078f82a01beca4193b49c325124966, type: 3}
+  m_Name: Guy
   m_EditorClassIdentifier: 
-  Characters:
-  - {fileID: 11400000, guid: 005506bef8dbb5547b4a558abd2080e6, type: 2}
+  Price: 100
+  Icon: {fileID: 21300000, guid: 5067f357e4de7844a9232de2ffd0056c, type: 3}
+  Prefab: {fileID: 4351000984016349202, guid: 95859fdb030df914e949c95a01cf730a, type: 3}

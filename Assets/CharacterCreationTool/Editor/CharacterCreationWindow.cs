@@ -16,6 +16,11 @@ public class CharacterCreationWindow : EditorWindow {
         GetWindow<CharacterCreationWindow>().Show();
     }
     
+    [MenuItem("Character Creator/Open Settings")]
+    private static void OpenSettings() {
+        Selection.activeObject = AssetDatabaseUtils.GetSingle<CharacterCreationParameters>();
+    }
+    
     private string characterName;
     private int characterPrice;
     
@@ -70,7 +75,11 @@ public class CharacterCreationWindow : EditorWindow {
             
             AssetDatabase.CreateAsset(characterData, characterDataPath);
             
-            AssetDatabaseUtils.GetSingle<CharacterList>()?.Characters.Add(characterData);
+            var characterList = AssetDatabaseUtils.GetSingle<CharacterList>();
+            if (characterList != null) {
+                characterList.Characters.Add(characterData);
+                EditorUtility.SetDirty(characterList);
+            }
         }
     }
 

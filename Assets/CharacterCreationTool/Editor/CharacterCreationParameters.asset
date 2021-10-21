@@ -18,4 +18,6 @@ MonoBehaviour:
   characterDataFolderName: Data
   CharacterPrefabBase: {fileID: 7450849567795141773, guid: 6363cc0f634bd004ea859073a8534f2a,
     type: 3}
-  PhotoBoothSceneName: Assets/CharacterPhotoBooth/CharacterPhotoShootBooth.unity
+  CharacterAnimatorController: {fileID: 9100000, guid: 8b9a677f24793ba45bdc27a1dab7745e,
+    type: 2}
+  PhotoBoothSceneName: Assets/CharacterCreationTool/PhotoshootBooth/CharacterPhotoShootBooth.unity
