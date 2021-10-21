@@ -41,7 +41,7 @@ public class ObstacleSpawner : MonoBehaviour
             GameObject newObstacle = Instantiate(prefab, transform.position + currPos, Quaternion.Euler(0, Random.Range(-30, 30), 0), transform);
             currPos += transform.forward * obstacleDistance;
             if (Random.value > 0.5f)
-                newObstacle.transform.localScale = new Vector3(-1, 1, 1);
+                newObstacle.transform.RotateAround(transform.position, Vector3.up, 180);
         }
     }
 
