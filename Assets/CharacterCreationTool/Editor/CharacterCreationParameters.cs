@@ -20,7 +20,7 @@ public class CharacterCreationParameters : ScriptableObject {
     private string characterDataFolderName;
 
     [Header("References")]
-    public GameObject CharacterPrefabBase;
+    public GameObject CharacterLogicPrefab;
     public AnimatorController CharacterAnimatorController;
     public string PhotoBoothSceneName;
     

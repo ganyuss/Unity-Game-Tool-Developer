@@ -53,7 +53,7 @@ public class CharacterCreationWindow : EditorWindow {
             var characterPreviewPath = Path.Combine(parameters.CharacterPreviewFolder, characterName + ".png");
             var characterDataPath = Path.Combine(parameters.CharacterDataFolder, characterName + ".asset");
             
-            GameObject characterPrefab = CreateCharacterPrefab(parameters.CharacterPrefabBase,
+            GameObject characterPrefab = CreateCharacterPrefab(parameters.CharacterLogicPrefab,
                 characterPrefabPath, parameters);
             
             CharacterPreviewCreator.CreatePreview(characterPrefab, parameters.PhotoBoothSceneName,
