@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using HomaGames.Internal.BaseTemplate;
 using UnityStandardAssets.CrossPlatformInput;
@@ -107,4 +109,29 @@ public class PlayerController : MonoBehaviour
         transform.localRotation = Quaternion.identity;
         rigidbody.velocity = Vector3.zero;
     }
+    
+#if UNITY_EDITOR
+
+    private bool invincible = false;
+    private float skipSpeed = 100;
+    private List<Collider> deactivatedColliders;
+
+    public void DEBUGToggleSkipMode() {
+        if (invincible) {
+            invincible = false;
+            rigidbody.velocity = new Vector3(0, 0, runSpeed);
+            foreach (Collider c in deactivatedColliders)
+                c.enabled = true;
+        }
+        else {
+            invincible = true;
+            DOTween.CompleteAll();
+            rigidbody.velocity = new Vector3(0, 0, skipSpeed);
+            deactivatedColliders = GetComponentsInChildren<Collider>().Where(c => c.enabled).ToList();
+            foreach (Collider c in deactivatedColliders)
+                c.enabled = false;
+        }
+    }
+
+#endif
 }
