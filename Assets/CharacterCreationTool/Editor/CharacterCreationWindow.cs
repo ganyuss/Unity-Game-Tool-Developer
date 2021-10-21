@@ -54,9 +54,9 @@ public class CharacterCreationWindow : EditorWindow {
         if (GUILayout.Button("Create Character")) {
 
             var parameters = CharacterCreationParameters.Instance;
-            var characterPrefabPath = Path.Combine(parameters.CharacterPrefabFolder, characterName + ".prefab");
-            var characterPreviewPath = Path.Combine(parameters.CharacterPreviewFolder, characterName + ".png");
-            var characterDataPath = Path.Combine(parameters.CharacterDataFolder, characterName + ".asset");
+            var characterPrefabPath = GetCharacterPrefabPath(parameters);
+            var characterPreviewPath = GetCharacterPreviewPath(parameters);
+            var characterDataPath = GetCharacterDataPath(parameters);
             
             GameObject characterPrefab = CreateCharacterPrefab(parameters.CharacterLogicPrefab,
                 characterPrefabPath, parameters);
@@ -79,6 +79,14 @@ public class CharacterCreationWindow : EditorWindow {
             }
         }
     }
+
+    private string GetCharacterPrefabPath(CharacterCreationParameters parameters) =>
+        Path.Combine(parameters.CharacterPrefabFolder, characterName + ".prefab");
+
+    private string GetCharacterPreviewPath(CharacterCreationParameters parameters) =>
+        Path.Combine(parameters.CharacterPreviewFolder, characterName + ".png");
+    private string GetCharacterDataPath(CharacterCreationParameters parameters) =>
+        Path.Combine(parameters.CharacterDataFolder, characterName + ".asset");
 
     private void UpdateMaterialList() {
         if (characterFBXAsset is null) {
@@ -160,8 +168,23 @@ public class CharacterCreationWindow : EditorWindow {
         DestroyImmediate(instance);
     }
 
-    private bool IsCharacterCreationPossible() =>
-        characterFBXAsset != null;
+    private bool IsCharacterCreationPossible() {
+        if (characterFBXAsset == null || string.IsNullOrEmpty(characterName))
+            return false;
+
+        var parameters = CharacterCreationParameters.Instance;
+        string[] filesToCreate = {
+            GetCharacterPrefabPath(parameters),
+            GetCharacterPreviewPath(parameters),
+            GetCharacterDataPath(parameters)
+        };
+
+        if (filesToCreate.Any(File.Exists)) {
+            return false;
+        }
+
+        return true;
+    }
 
     /// <summary>
     /// Works just like <see cref="Transform.Find">Transform.Find(string)</see>, but recursively.
