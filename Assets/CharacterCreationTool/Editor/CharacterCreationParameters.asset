@@ -12,10 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5a3c15419c89c94aaee17490243dc93, type: 3}
   m_Name: CharacterCreationParameters
   m_EditorClassIdentifier: 
-  characterFolder: Assets/Characters
-  characterPrefabFolderName: Prefabs
-  characterPreviewFolderName: Previews
-  characterDataFolderName: Data
+  characterPrefabFolderId: CharacterCreationTool.Destination.Prefab
+  characterPreviewFolderId: CharacterCreationTool.Destination.Preview
+  characterDataFolderId: CharacterCreationTool.Destination.Data
   CharacterLogicPrefab: {fileID: 7450849567795141773, guid: 6363cc0f634bd004ea859073a8534f2a,
     type: 3}
   CharacterAnimatorController: {fileID: 9100000, guid: 8b9a677f24793ba45bdc27a1dab7745e,

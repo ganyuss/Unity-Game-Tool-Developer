@@ -27,7 +27,10 @@ namespace EditorPlus.Editor {
 
             foreach (var folderLocator in locators) {
                 if (folderLocator.FolderId == id) {
-                    return Path.GetFullPath(Path.GetDirectoryName(AssetDatabase.GetAssetPath(folderLocator)));
+                    string folderPath = AssetDatabase.GetAssetPath(folderLocator);
+                    return folderPath.Substring(0, folderPath.LastIndexOfAny(new []{
+                        Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar
+                    }));
                 }
             }
 

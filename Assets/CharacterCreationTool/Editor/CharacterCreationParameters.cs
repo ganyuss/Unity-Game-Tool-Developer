@@ -7,17 +7,14 @@ using UnityEngine;
 public class CharacterCreationParameters : ScriptableObject {
 
     public static CharacterCreationParameters Instance => AssetDatabaseUtils.GetSingle<CharacterCreationParameters>();
-    
+
+    [Header("Folders")]
     [SerializeField]
-    private string characterFolder = "Assets/";
-    
-    [Header("Folder Names")]
+    private string characterPrefabFolderId;
     [SerializeField]
-    private string characterPrefabFolderName;
+    private string characterPreviewFolderId;
     [SerializeField]
-    private string characterPreviewFolderName;
-    [SerializeField]
-    private string characterDataFolderName;
+    private string characterDataFolderId;
 
     [Header("References")]
     public GameObject CharacterLogicPrefab;
@@ -29,9 +26,21 @@ public class CharacterCreationParameters : ScriptableObject {
     [Dropdown(nameof(CreateDropdownList))]
     public string Separator = ",";
 
-    public string CharacterPrefabFolder => Path.Combine(characterFolder, characterPrefabFolderName);
-    public string CharacterPreviewFolder => Path.Combine(characterFolder, characterPreviewFolderName);
-    public string CharacterDataFolder => Path.Combine(characterFolder, characterDataFolderName);
+    private string _characterPrefabFolder;
+    public string CharacterPrefabFolder => 
+        _characterPrefabFolder ??
+        (_characterPrefabFolder = FolderLocator.GetFolder(characterPrefabFolderId));
+    
+    
+    private string _characterPreviewFolder;
+    public string CharacterPreviewFolder =>
+        _characterPreviewFolder ??
+        (_characterPreviewFolder = FolderLocator.GetFolder(characterPreviewFolderId));
+
+    private string _characterDataFolder;
+    public string CharacterDataFolder => 
+        _characterDataFolder ??
+        (_characterDataFolder = FolderLocator.GetFolder(characterDataFolderId));
 
     private DropdownList<string> CreateDropdownList() {
         return new DropdownList<string> {

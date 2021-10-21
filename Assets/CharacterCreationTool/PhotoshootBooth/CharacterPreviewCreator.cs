@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -72,7 +73,11 @@ public class CharacterPreviewCreator : MonoBehaviour {
         DestroyImmediate(outputTexture);
         DestroyImmediate(previewTarget);
         characterPreview.SetActive(true);
-        
+
+        // Must wait here to force the loading of the sprite in the asset database 
+        // before changing the import settings, otherwise it would not work.
+        AssetDatabase.ImportAsset(targetFile);
+        AssetDatabase.SaveAssets();
         AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
 
         ChangeImportSettings(targetFile);
