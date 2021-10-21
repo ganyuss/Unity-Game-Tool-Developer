@@ -72,8 +72,6 @@ namespace EditorPlus.Editor {
                 return;
             }
             
-            if (Drawer is null)
-                Drawer = new SerializedPropertyDrawer();
             Drawer.Draw(position, property, label);
         }
 
@@ -82,8 +80,6 @@ namespace EditorPlus.Editor {
                 return EditorGUI.GetPropertyHeight(property, label);
             }
             
-            if (Drawer is null)
-                Drawer = new SerializedPropertyDrawer();
             return Drawer.GetPropertyHeight(property, label);
         }
     }
@@ -176,7 +172,7 @@ namespace EditorPlus.Editor {
             
             List<Decorator> regularDecorators = GetRegularDecorators(property);
             if (regularDecorators.All(d => d.ShowProperty(property))) {
-                    
+
                 fieldHeight = MustBeShown(label) ? EditorGUIUtility.singleLineHeight : 0;
 
                 if (property.isExpanded) {
@@ -196,7 +192,7 @@ namespace EditorPlus.Editor {
                 }
             }
 
-            return fieldHeight > 0 ? fieldHeight + 2 * FieldMargin : 0;
+            return fieldHeight > 0 ? fieldHeight : 0;
         }
 
         private float GetInnerPropertyHeight(SerializedProperty property) {
@@ -218,11 +214,6 @@ namespace EditorPlus.Editor {
 
         public void Draw(Rect rect, SerializedProperty property, GUIContent label) {
 
-            if (rect.height != 0) {
-                rect.height -= FieldMargin * 2;
-                rect.y += FieldMargin;
-            }
-            
             List<Decorator> regularDecorators = GetRegularDecorators(property);
             
             if (regularDecorators.All(d => d.ShowProperty(property))) {

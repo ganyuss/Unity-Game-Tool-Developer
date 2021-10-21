@@ -244,7 +244,7 @@ namespace EditorPlus.Editor {
         }
         
         private float GetElementHeight(int index) {
-            return EditorGUI.GetPropertyHeight(GetPropertyAt(index)) + 2*FieldMargin;
+            return EditorGUI.GetPropertyHeight(GetPropertyAt(index), GUIContent.none) + 2*FieldMargin;
         }
 
         private SerializedProperty GetPropertyAt(int index) {
