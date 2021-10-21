@@ -36,7 +36,12 @@ public class CharacterCreationWindow : EditorWindow {
         EditorGUILayout.Space();
 
         if (materials != null && materials.Length > 0) {
+            EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Model's Materials", EditorStyles.boldLabel);
+            if (GUILayout.Button("Open Material List", GUILayout.ExpandWidth(false))) {
+                GetWindow<MaterialListWindow>().Show();
+            }
+            EditorGUILayout.EndHorizontal();
 
             for (int i = 0; i < materials.Length; i++) {
                 materials[i] = ObjectField($"material {i}", materials[i], false);
@@ -83,7 +88,7 @@ public class CharacterCreationWindow : EditorWindow {
             return;
         }
         
-        if (modelRenderer is null)
+        if (modelRenderer == null)
             modelRenderer = characterFBXAsset.GetComponentInChildren<Renderer>();
 
         int modelMaterialCount = modelRenderer.sharedMaterials.Length;
