@@ -1,10 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.SceneManagement;
+#endif
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -15,7 +15,8 @@ public class CharacterPreviewCreator : MonoBehaviour {
     private Transform characterParent;
     [SerializeField]
     private Camera renderCamera;
-
+    
+#if UNITY_EDITOR
 #region static interface
     public static void CreatePreview(GameObject previewTargetPrefab, string photoBoothSceneName, string targetFile) {
         Scene[] loadedScenes = GetAllLoadedScenes().ToArray();
@@ -106,4 +107,5 @@ public class CharacterPreviewCreator : MonoBehaviour {
         EditorUtility.SetDirty(importer);
         importer.SaveAndReimport();
     }
+#endif
 }

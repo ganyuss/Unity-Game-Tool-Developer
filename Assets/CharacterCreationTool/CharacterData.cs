@@ -1,6 +1,8 @@
 ﻿using EditorPlus;
+#if UNITY_EDITOR
 using EditorPlus.Editor;
 using UnityEditor;
+#endif
 using UnityEngine;
 
 [CreateAssetMenu]
