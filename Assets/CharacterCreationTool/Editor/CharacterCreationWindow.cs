@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using EditorPlus;
 using EditorPlus.Editor;
 using JetBrains.Annotations;
 using UnityEditor;
@@ -11,8 +12,13 @@ using UnityEngine.UI;
 
 public class CharacterCreationWindow : EditorWindow {
 
+    private string CharacterAlreadyExistsMessage => $"A character with the same name already exists. " +
+                                                    $"Go on the character data asset " +
+                                                    $"and click the \"Delete Character Completely\" button.\n" +
+                                                    $"If the asset does not exist, check the character folder " +
+                                                    $"and remove all the assets named \"{characterName}\", in " +
+                                                    $"order to create a new one.";
 
-    
     private string characterName;
     private int characterPrice;
     
@@ -77,6 +83,13 @@ public class CharacterCreationWindow : EditorWindow {
                 characterList.Characters.Add(characterData);
                 EditorUtility.SetDirty(characterList);
             }
+        }
+        GUI.enabled = true;
+
+        if (CharacterAlreadyExists()) {
+            Rect HelpBoxControlRect = EditorGUILayout.GetControlRect(false,
+                EditorUtils.HelpBox.GetHeight(CharacterAlreadyExistsMessage, HelpBoxType.Info));
+            EditorUtils.HelpBox.Draw(HelpBoxControlRect, CharacterAlreadyExistsMessage, HelpBoxType.Info);
         }
     }
 
@@ -172,6 +185,10 @@ public class CharacterCreationWindow : EditorWindow {
         if (characterFBXAsset == null || string.IsNullOrEmpty(characterName))
             return false;
 
+        return !CharacterAlreadyExists();
+    }
+
+    private bool CharacterAlreadyExists() {
         var parameters = CharacterCreationParameters.Instance;
         string[] filesToCreate = {
             GetCharacterPrefabPath(parameters),
@@ -179,11 +196,7 @@ public class CharacterCreationWindow : EditorWindow {
             GetCharacterDataPath(parameters)
         };
 
-        if (filesToCreate.Any(File.Exists)) {
-            return false;
-        }
-
-        return true;
+        return filesToCreate.Any(File.Exists);
     }
 
     /// <summary>
