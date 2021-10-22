@@ -23,7 +23,7 @@ The window will then create a prefab for the character from the FBX file, create
 
 Once the FBX file is given to the window, the material model will be requested. One can click the "Open Material List" button to have access to all the `Toon/Lit` materials in the project. I set this filter because it looked like it was the style of the game, but this can easily be modified.
 
-# The spreadsheet export feature
+## The spreadsheet export feature
 
 The first step in the previous character creation workflow was for the game designer to add the name and the price of the character in a spreadsheet. I added a "Character Creator" > "Export Spreadsheet" menu, to create a CSV file containing the names and prices of all the characters in the game. 
 
